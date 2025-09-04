@@ -1,5 +1,5 @@
 # Define the Mautic version as an argument
-ARG MAUTIC_VERSION=5.2.3-apache
+ARG MAUTIC_VERSION=6.0.5-apache
 
 # Build stage:
 FROM mautic/mautic:${MAUTIC_VERSION} AS build
