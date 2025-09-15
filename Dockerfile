@@ -5,7 +5,7 @@ ARG MAUTIC_VERSION=6.0.5-apache
 FROM mautic/mautic:${MAUTIC_VERSION} AS build
 
 # Install dependencies needed for Composer to run and rebuild assets:
-RUN apt-get update && apt-get install -y git curl nodejs npm && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
 
 # Install Composer globally:
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
