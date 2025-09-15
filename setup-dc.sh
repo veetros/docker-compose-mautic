@@ -1,4 +1,13 @@
 cd /var/www
+
+# Load environment variables from deploy.env (created by GitHub Actions)
+if [ -f "/var/www/deploy.env" ]; then
+    source /var/www/deploy.env
+    echo "## Environment variables loaded from deploy.env"
+else
+    echo "## Warning: deploy.env not found, using defaults"
+fi
+
 docker compose build
 docker compose up -d db --wait && docker compose up -d mautic_web --wait
 
@@ -32,14 +41,9 @@ else
         echo "Container $MAUTIC_WORKER_CONTAINER does not exist or is not running."
     fi
     echo "## Installing Mautic..."
-    docker compose exec -T -u www-data -w /var/www/html mautic_web php ./bin/console mautic:install --force --admin_email {{EMAIL_ADDRESS}} --admin_password {{MAUTIC_PASSWORD}} http://{{IP_ADDRESS}}:{{PORT}}
+    docker compose exec -T -u www-data -w /var/www/html mautic_web php ./bin/console mautic:install --force --admin_email "${EMAIL_ADDRESS}" --admin_password "${MAUTIC_PASSWORD}" "http://${IP_ADDRESS}:${PORT}"
     
     echo "## Installing custom themes and plugins..."
-    
-    # Load environment variables
-    if [ -f "/var/www/.env" ]; then
-        source /var/www/.env
-    fi
     
     # Install themes
     if [ ! -z "$MAUTIC_THEMES" ]; then
@@ -77,10 +81,11 @@ fi
 echo "## Starting all the containers"
 docker compose up -d
 
-DOMAIN="{{DOMAIN_NAME}}"
+# Use DOMAIN_NAME from environment variables
+DOMAIN="$DOMAIN_NAME"
 
-if [[ "$DOMAIN" == *"DOMAIN_NAME"* ]]; then
-    echo "The DOMAIN variable is not set yet."
+if [ -z "$DOMAIN" ]; then
+    echo "The DOMAIN_NAME variable is not set yet."
     exit 0
 fi
 
@@ -125,7 +130,7 @@ fi
 echo "## Configuring Let's Encrypt for $DOMAIN..."
 
 # Use Certbot with the Nginx plugin to obtain and install a certificate
-certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m {{EMAIL_ADDRESS}}
+certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m "$EMAIL_ADDRESS"
 
 # Nginx will be reloaded automatically by Certbot after obtaining the certificate
 echo "## Let's Encrypt configured for $DOMAIN"

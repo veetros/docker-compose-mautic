@@ -116,17 +116,18 @@ jobs:
           exit 1
         fi
 
-    - name: Prepare setup-dc.sh script
+    - name: Prepare environment configuration
       run: |
-        # Replace placeholders in setup-dc.sh
-        sed -i "s/{{IP_ADDRESS}}/${{ env.ip }}/g" setup-dc.sh
-        sed -i "s/{{PORT}}/${{ env.MAUTIC_PORT }}/g" setup-dc.sh
-        sed -i "s/{{EMAIL_ADDRESS}}/${{ env.EMAIL_ADDRESS }}/g" setup-dc.sh
-        sed -i "s/{{MAUTIC_PASSWORD}}/${{ secrets.MAUTIC_PASSWORD }}/g" setup-dc.sh
-        if [ ! -z "${{ env.DOMAIN }}" ]; then
-          sed -i "s/{{DOMAIN_NAME}}/${{ env.DOMAIN }}/g" setup-dc.sh
+        # Create a deployment .env file with all required variables
+        cp .env deploy.env
+        echo "EMAIL_ADDRESS=${{ vars.EMAIL_ADDRESS }}" >> deploy.env
+        echo "MAUTIC_PASSWORD=${{ secrets.MAUTIC_PASSWORD }}" >> deploy.env
+        echo "IP_ADDRESS=${{ env.ip }}" >> deploy.env
+        echo "PORT=${{ env.MAUTIC_PORT }}" >> deploy.env
+        if [ ! -z "${{ vars.DOMAIN }}" ]; then
+          echo "DOMAIN_NAME=${{ vars.DOMAIN }}" >> deploy.env
         fi
-        cat setup-dc.sh # debug
+        cat deploy.env # debug
       env:
         EMAIL_ADDRESS: ${{ vars.EMAIL_ADDRESS }}
         DOMAIN: ${{ vars.DOMAIN }}
