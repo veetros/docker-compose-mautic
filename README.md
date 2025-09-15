@@ -65,6 +65,7 @@ The variables are values that is OK to be visible. You can edit the vaule after 
 
 - `EMAIL_ADDRESS` will be used to create a Mautic admin user and you'll use it to log in. It is also used to build the SSL certificates.
 - `DOMAIN` is the domain that will be used to access your Mautic. Do not add it at first. Add it only after you know the VPS IP address and after you've pointed the DNS record to that IP address. If the DOMAIN is unknown, you can still access your new Mautic via the IP address.
+- `VPS_NAME` (optional) - customize the name of your DigitalOcean droplet. Defaults to `mautic-vps` if not set. Useful if you want to run multiple instances or use a custom naming convention.
 
 Example:
 ![Github Actions Variables](https://github.com/escopecz/docker-compose-mautic/assets/1235442/bfc5df49-55b0-4a1d-a8ee-181429bdf244)
